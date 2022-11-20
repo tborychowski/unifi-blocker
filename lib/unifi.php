@@ -16,7 +16,11 @@ class Unifi {
 
 
 	public function block_status($mac) {
+		$mac = $this->get_mac($mac);
+
+		vardump($mac);
 		$device = $this->client->stat_client($mac)[0];
+
 		$name = $this->get_name($device);
 		$is_blocked = $device->blocked ? '' : ' NOT';
 
@@ -25,24 +29,54 @@ class Unifi {
 
 
 	public function block($mac) {
+		$mac = $this->get_mac($mac);
 		$this->client->block_sta($mac);
 		$this->block_status($mac);
 	}
 
 
 	public function unblock($mac) {
+		$mac = $this->get_mac($mac);
 		$res = $this->client->unblock_sta($mac);
 		$this->block_status($mac);
 	}
 
 
 	public function list_clients () {
-		$res = $this->client->list_clients();
+		$res = $this->get_clients();
 		foreach ($res as $device) {
-			echo $device->ip. '	' . $device->mac . '	' . $this->get_name($device) . PHP_EOL;
+			$ip = substr($device['ip'] . '     ', 0, 15);
+			echo $device['mac'] . '  ' . $ip . ' ' . $device['name'] . PHP_EOL;
 		}
 	}
 
+
+
+
+	private function get_mac ($name_or_mac) {
+		$is_mac = filter_var($name_or_mac, FILTER_VALIDATE_MAC);
+		if ($is_mac !== false) return $name_or_mac;
+		else {	// find by name
+			$clients = $this->get_clients();
+			$key = array_search($name_or_mac, array_column($clients, 'name'));
+			if (!isset($key)) $key = array_search($name_or_mac, array_column($clients, 'hostname'));
+			if (!isset($key)) return null;
+			return $clients[$key]['mac'];
+		}
+	}
+
+	private function get_clients () {
+		$res = $this->client->list_clients();
+		$clients = [];
+		foreach ($res as $device) {
+			$clients[] = [
+				'name' => $this->get_name($device),
+				'ip' => $device->ip ?? '',
+				'mac' => $device->mac ?? ''
+			];
+		}
+		return $clients;
+	}
 
 
 	private function get_name($device) {

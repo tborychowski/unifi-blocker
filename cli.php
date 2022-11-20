@@ -1,19 +1,14 @@
 <?php
 
-require_once 'lib/lib.php';
-
-
-$devices = [
-	'name' => 'macaddress'
-];
-
+require_once 'lib/_lib.php';
 
 $unifi = new Unifi();
 
-$device = isset($argv[1]) ? $argv[1] : '';
-$cmd = isset($argv[2]) ? $argv[2] : 'status';
-$mac = isset($devices[$device]) ? $devices[$device] : null;
+$cmd = isset($argv[1]) ? $argv[1] : 'list';
+$mac = isset($argv[2]) ? $argv[2] : '';
 
+
+if ($cmd == 'list') return $unifi->list_clients();
 
 if (isset($mac)) {
 	if ($cmd == 'status') return $unifi->block_status($mac);
@@ -21,5 +16,5 @@ if (isset($mac)) {
 	if ($cmd == 'unblock') return $unifi->unblock($mac);
 }
 else {
-	echo 'Device not found' . PHP_EOL;
+	echo 'Device or command not found' . PHP_EOL;
 }
