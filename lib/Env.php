@@ -4,7 +4,6 @@
  * Read & parse .env file in the root of the project and load vars to $_ENV
  */
 class Env {
-
 	public static function read ($name = '.env') {
 		if (isset($_SERVER['PWD'])) {
 			$path = rtrim($_SERVER['PWD'], '/') . DIRECTORY_SEPARATOR . $name;
@@ -12,6 +11,10 @@ class Env {
 		if (!isset($path) || !is_readable($path)) {
 			$path = dirname($_SERVER['SCRIPT_FILENAME']) . DIRECTORY_SEPARATOR . $name;
 		}
+		if (!isset($path) || !is_readable($path)) {
+		    $path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $name;
+		}
+
 		if (!is_readable($path)) return;
 
 		$lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);

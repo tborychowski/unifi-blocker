@@ -69,6 +69,7 @@ class Unifi {
 	private function get_sessions () {
 		$res = $this->client->stat_sessions();
 		$clients = [];
+		if (empty($res)) return [];
 		foreach ($res as $device) {
 			$clients[] = [
 				'name' => $this->get_name($device),
@@ -82,6 +83,7 @@ class Unifi {
 
 	private function get_clients () {
 		$res = $this->client->list_clients();
+		if (empty($res)) return [];
 		$clients = [];
 		foreach ($res as $device) {
 			$clients[] = [

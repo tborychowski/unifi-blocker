@@ -1,3 +1,0 @@
-#!/bin/bash
-
-$(which php) index.php "$1" "$2"
