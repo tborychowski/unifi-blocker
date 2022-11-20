@@ -1,9 +1,6 @@
 #!/usr/bin/php
 <?php
 
-//echo getcwd();
-//echo dirname(__FILE__);
-
 require_once 'lib/_lib.php';
 
 $unifi = new Unifi();
